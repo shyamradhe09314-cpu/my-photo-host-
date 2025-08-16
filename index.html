@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My Always-On Photo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root{--pad:clamp(16px,2.5vw,28px)}
+    *{box-sizing:border-box}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; margin:0; padding:var(--pad); min-height:100vh; display:grid; place-items:center; background:#f6f7f9;}
+    .card{background:#fff; padding:var(--pad); border-radius:16px; box-shadow:0 10px 40px rgba(0,0,0,.08); max-width:840px; width:min(92vw,840px);}
+    h1{margin:0 0 .5rem 0; font-size:clamp(20px,3.2vw,28px)}
+    .sub{opacity:.7; margin:0 0 1rem 0; font-size:.95rem}
+    .frame{display:grid; place-items:center; border:1px dashed #d0d4d9; border-radius:12px; overflow:hidden; background:#fafbfc; min-height:240px}
+    img{max-width:100%; height:auto; display:block}
+    code,kbd{background:#f1f3f5; padding:.12rem .3rem; border-radius:6px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace}
+    .small{opacity:.7; font-size:.92rem; margin-top:.75rem}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>My Photo</h1>
+    <p class="sub">This page always shows <code>img/photo.jpg</code> from this repository. Replace or delete it anytime.</p>
+    <div id="frame" class="frame"><div id="status" class="small">Loading photo…</div></div>
+    <div class="small" id="hint"></div>
+  </div>
+
+<script>
+  // Auto-detect USER and REPO from the GitHub Pages URL:
+  // Works for: https://<user>.github.io/<repo>/
+  const host = window.location.hostname; // e.g. ramesh.github.io
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, ''); // e.g. my-photo-host/...
+  const user = host.split('.')[0];           // ramesh
+  const repo = path.split('/')[0] || 'my-photo-host';
+  const branch = 'main';
+  const imagePath = 'img/photo.jpg';
+  const rawURL = `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${imagePath}?t=${Date.now()}`;
+
+  const frame = document.getElementById('frame');
+  const status = document.getElementById('status');
+  const hint = document.getElementById('hint');
+
+  const img = new Image();
+  img.onload = () => {
+    frame.innerHTML = '';
+    frame.appendChild(img);
+    hint.textContent = `If you replace ${imagePath}, refresh to see the new photo.`;
+  };
+  img.onerror = () => {
+    status.textContent = `❌ Photo not found. Upload ${imagePath} to this repo.`;
+    hint.innerHTML = `Tip: In GitHub, go to <kbd>img/</kbd> → <kbd>Add file</kbd> → <kbd>Upload files</kbd> → choose <kbd>photo.jpg</kbd>.`;
+  };
+  img.src = rawURL;
+</script>
+</body>
+</html>
